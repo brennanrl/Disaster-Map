@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width">
+  <head>
+    <title>MAS Live Map</title>
+    <style>
+        #map {
+            height: 1000px;
+            width: 1000px;
+        }
+        /*.main {
+            margin-left: 100px;
+        }  */ 
+        body {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            font-family: 'Arial', serif;
+            color: white;
+            background-color: #292929;
+        }
+        h1 {
+            font-family: 'Arial', serif;
+            color: white;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 30%;
+            background-color: 292929; 
+            transition: 1s; 
+        } 
+
+        .sidenav a {
+            font-size: 25px;
+            color: #292929;
+            transition: 1s;
+        }
+
+    </style>
+  </head>
+  <body>
+    <div class="sidenav">
+        <h1>Welcome to MAS</h1>
+        <p>Welcome to our website, feel free to explore the map to your right.</p>
+        <div id="sidebar">
+        </div>
+    </div>
+    <div id="map" class="main"/>
+        <script>
+        	var map;
+
+        	function refreshMap()
+        	{
+        		var request = new XMLHttpRequest()
+
+				// Open a new connection, using the GET request on the URL endpoint
+				request.open('GET', 'http://35.226.38.9:444/map', true)
+
+				request.onload = function() {
+					var data = JSON.parse(this.response);
+					var disasters = data["disasters"];
+					console.log(disasters);
+					console.log(typeof(disasters));
+					for (var key in disasters) {
+						var d = disasters[key];
+						const marker = new google.maps.Marker({position: {lat: d['lat'], lng: d['long']}, map: map,
+																title: d['headline']});
+						var elem = document.createElement("h4");
+						elem.appendChild(document.createTextNode(d['headline']));
+						var elem2 = document.createElement("h5");
+						elem2.appendChild(document.createTextNode("Keywords: "+d['body']));
+						document.getElementById("sidebar").appendChild(elem);
+						document.getElementById("sidebar").appendChild(elem2);
+					}
+				}
+
+				// Send request
+				request.send()
+        	}
+
+
+            function initMap() {
+                const uwaterloo = {lat: 43.472285, lng: -80.544858};
+                map = new google.maps.Map(document.getElementById('map'), {zoom: 4, center: uwaterloo});
+                refreshMap();
+                // const marker = new google.maps.Marker({position: uwaterloo, map: map});
+            }
+        </script>
+        <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBwEOCi-eE5yfIHTMpDvE1TB0ER5m25nE&callback=initMap">
+        </script>
+  </body>
+
+</html>
+
+
